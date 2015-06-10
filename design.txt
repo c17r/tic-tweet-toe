@@ -1,0 +1,45 @@
+123
+456
+789
+
+commands:
+START,NEW [X|O]
+SHOW,LAST
+1,2,3,4,5,6
+SCORE,STATS
+HELP
+
+
+data:
+
+score
+    twitter_id
+    win
+    lose
+    draw
+    date_updated
+
+game
+    twitter_id
+    board
+    marker
+    style
+    opp_moves
+    date_updated
+
+
+----
+
+msg['entities']['user_mentions'] array, people in tweet
+
+msg['retweeted'] boolean, look for False
+msg['in_reply_to_screen_name'] string, look for 'tic_tweet_toe'
+*msg['lang'] string, look for 'en'
+*msg['text'] string, C&C
+*msg['id_str'] string, id of tweet, needed for reply
+*msg['user']['screen_name']
+
+t.statues.update(
+    in_reply_to_status_id=msg['id_str'],
+    status='@%s %s' % (msg['user']['screen_name'], response)
+)

@@ -1,0 +1,4 @@
+twitter==1.17.0
+requests-oauthlib==0.5.0
+arrow==0.5.4
+daemonocle==0.8
