@@ -13,11 +13,11 @@ jobs = []
 
 
 def bootstrap():
-    with open("secrets.txt", "r") as f:
+    args = parser.parse_args()
+
+    with open(args.config_file, "r") as f:
         raw = f.read()
     config = json.loads(raw)
-
-    args = parser.parse_args()
 
     jobs.append(ReplyService(config, args.db_file, sleep=1))
 
@@ -57,6 +57,11 @@ parser.add_argument(
     '--db-file',
     type=str,
     default='./ttt_storage.db'
+)
+parser.add_argument(
+    '--config-file',
+    type=str,
+    default='./secrets.txt'
 )
 
 
