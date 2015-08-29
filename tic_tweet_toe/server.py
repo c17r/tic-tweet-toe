@@ -30,7 +30,8 @@ class Server(object):
             'SHOW,LAST',
             '1,2,3,4,5,6',
             'SCORE,STATS',
-            'HELP'
+            'HELP',
+            'VERSION'
         ])
         self._unknown_msg = 'I don\'t know that.' + self._help_msg
         self._commands = {
@@ -50,6 +51,7 @@ class Server(object):
             '7': self._player_move,
             '8': self._player_move,
             '9': self._player_move,
+            'VERSION': self._show_version,
         }
 
     def main(self):
@@ -227,6 +229,9 @@ class Server(object):
 
     def _show_help(self, data, message):
         self._send_reply(message, self._help_msg)
+
+    def _show_version(self, data, message):
+        self._send_reply(message, 'v0.2')
 
     def _unknown_cmd(self, data, message):
         self._send_reply(message, self._unknown_msg)
