@@ -160,7 +160,7 @@ class Server(object):
             reply += "No current game"
             return self._send_reply(message, reply)
 
-        square = int(data['cmd']) - 1 # board is zero-based
+        square = int(data['cmd']) - 1  # board is zero-based
         board = serializers.board_load(game['board'])
         if not board.square_free(square):
             reply += "Invalid square, pick again\n"
