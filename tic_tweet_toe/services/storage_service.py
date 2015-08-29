@@ -48,17 +48,22 @@ class Storage(object):
         conn.row_factory = _dict_factory
         return conn
 
-    def _make_insert(self, table_name, record):
+    def _make_insert(self, table_name, record, modifier=None):
+        sql = ''
         fields = ''
         vals = ''
         sep = ''
+
         for k in record.keys():
             fields += sep + k
             vals += sep + ':' + k
             sep = ', '
-        return "INSERT OR REPLACE INTO %s (%s) values (%s)" % (table_name,
-                                                               fields,
-                                                               vals)
+
+        sql = 'INSERT'
+        if modifier:
+            sql += ' OR ' + modifier
+        sql += ' INTO %s (%s) values (%s)' % (table_name, fields, vals)
+        return sql
 
     def get_score(self, twitter_id):
         with self._get_conn() as conn:
@@ -71,7 +76,7 @@ class Storage(object):
     def put_score(self, record):
         with self._get_conn() as conn:
             cur = conn.cursor()
-            stmt = self._make_insert("score", record)
+            stmt = self._make_insert("score", record, "REPLACE")
             cur.execute(stmt, record)
 
     def get_game(self, twitter_id):
@@ -85,7 +90,7 @@ class Storage(object):
     def put_game(self, record):
         with self._get_conn() as conn:
             cur = conn.cursor()
-            stmt = self._make_insert("game", record)
+            stmt = self._make_insert("game", record, "REPLACE")
             cur.execute(stmt, record)
 
     def remove_game(self, record):
