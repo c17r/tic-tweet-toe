@@ -61,8 +61,7 @@ class Storage(object):
                                                                vals)
 
     def get_score(self, twitter_id):
-        conn = self._get_conn()
-        with conn:
+        with self._get_conn() as conn:
             cur = conn.cursor()
             cur.execute("SELECT * FROM score WHERE twitter_id = :twitter_id", {
                 'twitter_id': twitter_id
@@ -70,15 +69,13 @@ class Storage(object):
             return cur.fetchone()
 
     def put_score(self, record):
-        conn = self._get_conn()
-        with conn:
+        with self._get_conn() as conn:
             cur = conn.cursor()
             stmt = self._make_insert("score", record)
             cur.execute(stmt, record)
 
     def get_game(self, twitter_id):
-        conn = self._get_conn()
-        with conn:
+        with self._get_conn() as conn:
             cur = conn.cursor()
             cur.execute('SELECT * FROM game WHERE twitter_id = :twitter_id', {
                 'twitter_id': twitter_id
@@ -86,14 +83,12 @@ class Storage(object):
             return cur.fetchone()
 
     def put_game(self, record):
-        conn = self._get_conn()
-        with conn:
+        with self._get_conn() as conn:
             cur = conn.cursor()
             stmt = self._make_insert("game", record)
             cur.execute(stmt, record)
 
     def remove_game(self, record):
-        conn = self._get_conn()
-        with conn:
+        with self._get_conn() as conn:
             conn.execute("DELETE FROM game WHERE twitter_id = :twitter_id",
                          record)
