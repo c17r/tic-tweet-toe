@@ -40,6 +40,21 @@ class Storage(object):
                     INSERT INTO version VALUES (1);
                 """)
 
+            if version <= 1:
+                cur.executescript("""
+                    CREATE TABLE message (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        tweet_id TEXT,
+                        username TEXT,
+                        status TEXT,
+                        date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+
+                    CREATE INDEX message_idx
+                      on message (date_added ASC);
+
+                    INSERT INTO version VALUES (2);
+                """)
+
     def _get_conn(self):
         conn = sql.connect(
             self._db_name,
@@ -97,3 +112,19 @@ class Storage(object):
         with self._get_conn() as conn:
             conn.execute("DELETE FROM game WHERE twitter_id = :twitter_id",
                          record)
+
+    def add_message(self, record):
+        with self._get_conn() as conn:
+            cur = conn.cursor()
+            stmt = self._make_insert("message", record)
+            cur.execute(stmt, record)
+
+    def get_first_message(self):
+        with self._get_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM message ORDER BY date_added LIMIT 1")
+            return cur.fetchone()
+
+    def remove_message(self, record):
+        with self._get_conn() as conn:
+            conn.execute("DELETE FROM message WHERE id = :id", record)
