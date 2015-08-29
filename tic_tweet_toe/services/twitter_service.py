@@ -59,11 +59,20 @@ class Twitter(object):
         self.twitter.statuses.update(status=status)
 
     def post_reply(self, message, status):
+        return self.post_reply(
+            message['id_str'],
+            message['user']['screen_name'],
+            status
+        )
+    
+    def post_reply(self, tweet_id, reply_to, status):
         self._verify_configured()
 
-        reply = '@' + message['user']['screen_name']
+        reply = '@' + reply_to
         if reply not in status:
             status = reply + ' ' + status
 
-        self.twitter.statuses.update(in_reply_to_status_id=message['id_str'],
-                                     status=status)
+        self.twitter.statuses.update(
+            in_reply_to_status_id=tweet_id,
+            status=status
+        )
