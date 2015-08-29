@@ -10,8 +10,8 @@ def _dict_factory(cursor, row):
 
 class Storage(object):
 
-    def __init__(self):
-        self._db_name = "ttt_storage.db"
+    def __init__(self, db_path=None):
+        self._db_name = db_path or "ttt_storage.db"
 
         conn = sql.connect(self._db_name)
         with conn:

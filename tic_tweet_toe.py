@@ -17,13 +17,15 @@ def bootstrap():
         raw = f.read()
     config = json.loads(raw)
 
-    jobs.append(ReplyService(config, sleep=1))
+    args = parser.parse_args()
+
+    jobs.append(ReplyService(config, args.db_file, sleep=1))
 
     for j in jobs:
         j.start()
 
     twitter = Twitter(**config)
-    storage = Storage()
+    storage = Storage(args.db_file)
 
     server = Server(twitter, storage)
     server.main()
@@ -50,6 +52,11 @@ parser.add_argument(
     '--log-file',
     type=str,
     default='./ttt.log',
+)
+parser.add_argument(
+    '--db-file',
+    type=str,
+    default='./ttt_storage.db'
 )
 
 
