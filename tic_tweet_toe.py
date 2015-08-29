@@ -42,6 +42,11 @@ parser.add_argument(
     choices=['start', 'stop', 'restart', 'status', 'cli'],
 )
 parser.add_argument(
+    '--pid-file',
+    type=str,
+    default='./tic_tweet_toe.pid',
+)
+parser.add_argument(
     '--log-file',
     type=str,
     default='./ttt.log',
@@ -61,7 +66,7 @@ if __name__ == "__main__":
         daemon = daemonocle.Daemon(
             worker=bootstrap,
             shutdown_callback=cb_shutdown,
-            pidfile="/var/run/tic_tweet_toe/tic_tweet_toe.pid",
+            pidfile=args.pid_file,
             workdir="."
         )
         daemon.do_action(args.action)
