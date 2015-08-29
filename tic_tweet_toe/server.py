@@ -122,7 +122,7 @@ class Server(object):
         if len(data['args']) > 0:
             if data['args'][0] not in markers:
                 reply += "Invalid marker choice, try again"
-                return self._twitter.post_reply(message, reply)
+                return self._send_reply(message, reply)
             else:
                 human = data['args'][0]
         else:
@@ -149,14 +149,14 @@ class Server(object):
         reply += "You're %s" % game["marker"]
         reply += "\n" + self._pretty_board(board)
 
-        self._twitter.post_reply(message, reply)
+        self._send_reply(message, reply)
 
     def _player_move(self, data, message):
         game = self._storage.get_game(data['person'])
         reply = '\n'
         if game is None:
             reply += "No current game"
-            return self._twitter.post_reply(message, reply)
+            return self._send_reply(message, reply)
 
         square = int(data['cmd']) - 1 # board is zero-based
         board = serializers.board_load(game['board'])
@@ -186,7 +186,7 @@ class Server(object):
         reply += "You're %s" % game["marker"]
         reply += "\n" + self._pretty_board(board)
 
-        self._twitter.post_reply(message, reply)
+        self._send_reply(message, reply)
 
     def _show_board(self, data, message, existing_reply=None):
         game = self._storage.get_game(data['person'])
@@ -194,7 +194,7 @@ class Server(object):
 
         if game is None:
             reply += "No current game"
-            return self._twitter.post_reply(message, reply)
+            return self._send_reply(message, reply)
 
         board = serializers.board_load(game["board"])
         last = arrow.get(game['date_started']).humanize()
@@ -203,7 +203,7 @@ class Server(object):
         reply += "\nLast move: %s" % last
         reply += "\n" + self._pretty_board(board)
 
-        self._twitter.post_reply(message, reply)
+        self._send_reply(message, reply)
 
     def _show_score(self, data, message):
         score = self._storage.get_score(data['person'])
@@ -223,13 +223,13 @@ class Server(object):
         else:
             reply += "\nGame in progress"
 
-        self._twitter.post_reply(message, reply)
+        self._send_reply(message, reply)
 
     def _show_help(self, data, message):
-        self._twitter.post_reply(message, self._help_msg)
+        self._send_reply(message, self._help_msg)
 
     def _unknown_cmd(self, data, message):
-        self._twitter.post_reply(message, self._unknown_msg)
+        self._send_reply(message, self._unknown_msg)
 
     def _pretty_board(self, board):
         pb = []
@@ -287,4 +287,11 @@ class Server(object):
         self._storage.put_score(score)
         self._storage.remove_game(game)
 
-        self._twitter.post_reply(message, reply)
+        self._send_reply(message, reply)
+
+    def _send_reply(self, message, status):
+        self._storage.add_message({
+            'tweet_id': message['id_str'],
+            'username': message['user']['screen_name'],
+            'status': status
+        })
