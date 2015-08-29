@@ -1,4 +1,8 @@
+import logging
 from services import Storage, Twitter, StoppableProcess
+
+
+_logger = logging.getLogger(__name__)
 
 
 class ReplyService(StoppableProcess):
@@ -13,6 +17,12 @@ class ReplyService(StoppableProcess):
     def _setup(self):
         self._twitter = Twitter(**self._config)
         self._storage = Storage()
+
+    def _teardown(self):
+        msg = self.name + " shutting down"
+        if self.exit.is_set():
+            msg += ", via signal"
+        _logger.info(msg)
 
     def _ping(self):
         reply = self._storage.get_first_message()

@@ -4,7 +4,7 @@ import arrow
 import services.serializers as serializers
 from ttt import Board, ComputerPlayer, AbstractPlayer, AbstractGame
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 random.seed()
 
@@ -86,10 +86,10 @@ class Server(object):
 
                         func(msg)
             except KeyboardInterrupt:
-                logging.info("Shutdown signal caught, shutting down server")
+                _logger.info("Shutdown signal caught, shutting down server")
                 return
             except Exception as e:
-                logging.exception(e)
+                _logger.exception(e)
 
     def _relevant_data(self, message):
         text = message['text'].upper()

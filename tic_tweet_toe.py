@@ -1,15 +1,12 @@
 import sys
 import json
 import logging
+import argparse
 import daemonocle
 from tic_tweet_toe import Server, Twitter, Storage, ReplyService
 
 
-logging.basicConfig(
-    filename="/var/log/tic_tweet_toe/ttt.log",
-    level=logging.INFO,
-    format="%(asctime)s : %(levelname)s : %(name)s : %(message)s"
-)
+_logger = logging.getLogger(__name__)
 
 
 jobs = []
@@ -33,19 +30,40 @@ def bootstrap():
 
 
 def cb_shutdown(message, code):
-    logging.info("Shutdown signal triggered: %s - %s", code, message)
+    _logger.info("Shutdown signal triggered: %s - %s", code, message)
     for j in jobs:
         j.stop()
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    'action',
+    type=str,
+    choices=['start', 'stop', 'restart', 'status', 'cli'],
+)
+parser.add_argument(
+    '--log-file',
+    type=str,
+    default='./ttt.log',
+)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) >= 2:
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        filename=args.log_file,
+        level=logging.INFO,
+        format="%(asctime)s : %(levelname)s : %(name)s : %(message)s"
+    )
+
+    if args.action != 'cli':
         daemon = daemonocle.Daemon(
             worker=bootstrap,
             shutdown_callback=cb_shutdown,
             pidfile="/var/run/tic_tweet_toe/tic_tweet_toe.pid",
             workdir="."
         )
-        daemon.do_action(sys.argv[1])
+        daemon.do_action(args.action)
     else:
         bootstrap()
