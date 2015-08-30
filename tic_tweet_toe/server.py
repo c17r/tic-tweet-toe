@@ -63,10 +63,13 @@ class Server(object):
             try:
                 for msg in self._twitter.user_stream():
                     if 'text' in msg:
+                        # skip if someone is retweeting a message
                         if msg['retweeted'] is True:
                             continue
+                        # skip if we're mentioned but not directed at us
                         if msg['in_reply_to_screen_name'] != self._twitter.screen_name:
                             continue
+                        # skip if tweet mentioned more than just the bot
                         if 'entities' in msg \
                                 and 'user_mentions' in msg['entities'] \
                                 and len(msg['entities']['user_mentions']) > 1:
