@@ -1,3 +1,4 @@
+Twitter bot that plays tic-tweet-toe. You can see it in action at https://twitter.com/tic_tweet_toe
 
 TODO:
 
