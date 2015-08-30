@@ -38,8 +38,10 @@ class Twitter(object):
             profile = twitter.account.verify_credentials()
         except api.TwitterHTTPError as e:
             for err in e.response_data['errors']:
-                if err['code'] == 89: # invalid token or credentials
-                    raise TwitterServiceAuthenticationException
+                if err['code'] == 89:  # invalid token or credentials
+                    raise TwitterServiceAuthenticationException(
+                        "Invalid Token"
+                    )
             raise
 
         self.auth = auth
@@ -54,7 +56,10 @@ class Twitter(object):
         self._verify_configured()
         breaks = 0
 
-        stream = api.TwitterStream(auth=self.auth, domain='userstream.twitter.com')
+        stream = api.TwitterStream(
+            auth=self.auth,
+            domain='userstream.twitter.com'
+        )
         for msg in stream.user():
             if see_nontweet_messages:
                 yield msg
@@ -84,7 +89,7 @@ class Twitter(object):
             message['user']['screen_name'],
             status
         )
-    
+
     def post_reply(self, tweet_id, reply_to, status):
         self._verify_configured()
 
