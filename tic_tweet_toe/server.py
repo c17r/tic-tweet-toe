@@ -28,7 +28,7 @@ class Server(object):
             'Commands:',
             'START,NEW [X|O]',
             'SHOW,LAST',
-            '1,2,3,4,5,6',
+            '1,2,3,4,5,6,7,8,9',
             'SCORE,STATS',
             'HELP',
             'VERSION'
