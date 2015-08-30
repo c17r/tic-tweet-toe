@@ -59,21 +59,9 @@ class Server(object):
 
     def _loop_for_relevant_messages(self, func):
 
-        break_count = 0
         while True:
             try:
                 for msg in self._twitter.user_stream():
-                    if 'hangup' in msg and msg['hangup'] is True:
-                        break_count += 1
-                        if break_count > 5:
-                            raise NetworkException("Repeated Connection Failures")
-                        break
-
-                    break_count = 0
-
-                    if 'event' in msg and msg['event'] == 'access_revoked':
-                        raise ServiceException("Access to Stream Revoked")
-
                     if 'text' in msg:
                         if msg['retweeted'] is True:
                             continue

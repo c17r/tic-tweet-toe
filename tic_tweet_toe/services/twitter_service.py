@@ -9,6 +9,10 @@ class TwitterServiceNotConfigured(Exception):
     pass
 
 
+class TwitterNetworkException(Exception):
+    pass
+
+
 class Twitter(object):
 
     def __init__(self, token, token_secret, consumer_key, consumer_secret):
@@ -46,12 +50,28 @@ class Twitter(object):
         if self.auth is None:
             raise TwitterServiceNotConfigured
 
-    def user_stream(self):
+    def user_stream(self, see_nontweet_messages=False):
         self._verify_configured()
+        breaks = 0
 
         stream = api.TwitterStream(auth=self.auth, domain='userstream.twitter.com')
         for msg in stream.user():
-            yield msg
+            if see_nontweet_messages:
+                yield msg
+            else:
+                if 'hangup' in msg and msg['hangup'] is True:
+                    breaks += 1
+                    if breaks > 5:
+                        raise TwitterNetworkException(
+                            "Repeated Network Failures"
+                        )
+                elif 'event' in msg and msg['event'] == 'access_revoked':
+                    raise TwitterServiceAuthenticationException(
+                        "Access to Stream Revoked"
+                    )
+                else:
+                    breaks = 0
+                    yield msg
 
     def post_status(self, status):
         self._verify_configured()
