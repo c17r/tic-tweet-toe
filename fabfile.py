@@ -43,7 +43,8 @@ def deploy():
     with settings(sudo_user='tic_tweet_toe'):
 
         with cd('/home/tic_tweet_toe/run/%(stamp)s' % env):
-            sudo('virtualenv venv -p $(pyenv prefix 2.7.11)/bin/python' % env)
+            with shell_env(PATH='/opt/pyenv/bin/:$PATH', PYENV_ROOT='/opt/pyenv'):
+                sudo('virtualenv venv -p $(pyenv prefix 2.7.11)/bin/python' % env)
 
             with path('./venv/bin', behavior='prepend'):
                 sudo('pip install --quiet --no-cache-dir -r ./src/requirements/default.txt' % env)
