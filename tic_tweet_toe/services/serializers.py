@@ -1,5 +1,5 @@
 import json
-from ..ttt import Board, ComputerPlayer
+from ttt import Board, ComputerPlayer
 
 
 class BoardSerializerException(Exception):
